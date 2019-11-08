@@ -13,7 +13,7 @@
 
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/img_detail_film"
         android:layout_width="200dp"
         android:layout_height="206dp"
         android:layout_marginStart="16dp"
@@ -25,21 +25,21 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_shoushenk"
         app:srcCompat="@drawable/pobeg_iz_shoushenka" />
 
-    <Button
-        android:id="@+id/button_shoushenk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/detali_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        android:onClick="onClickShoushenk"/>
+        <Button
+            android:id="@+id/button_shoushenk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="onClickButton"
+            android:text="@string/detali_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_detail_film" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/img_Green_mile"
         android:layout_width="200dp"
         android:layout_height="206dp"
         android:layout_marginStart="16dp"
@@ -58,15 +58,15 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:onClick="onClickGreenMile"
+            android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+            app:layout_constraintTop_toBottomOf="@+id/img_Green_mile" />
 
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/img_Gamp"
         android:layout_width="200dp"
         android:layout_height="206dp"
         android:layout_marginStart="16dp"
@@ -86,12 +86,12 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="onClickGamp"
+            android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+            app:layout_constraintTop_toBottomOf="@+id/img_Gamp" />
 
         <TextView
             android:id="@+id/textView_shoushenk"
@@ -118,7 +118,7 @@
         android:text="@string/zelenaia_milia"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/imageView2"
+        app:layout_constraintBottom_toTopOf="@+id/img_Green_mile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_shoushenk"
