@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("Gamp_color", mGamp.getCurrentTextColor());
     }
 
+    final static int OUR_REQUEST_CODE = 100;
+
     public void onClickButton(View view) {
         int id = view.getId();
         TextView mTextView = null;
