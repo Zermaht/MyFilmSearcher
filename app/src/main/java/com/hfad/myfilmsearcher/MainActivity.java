@@ -1,28 +1,34 @@
 package com.hfad.myfilmsearcher;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    final static String TAG = MainActivity.class.getSimpleName();
+
     private TextView mShoushenkTextView;
     private TextView mGreenMile;
     private TextView mGamp;
+    private String answerCheckBox;
+    private String answerComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-         mShoushenkTextView = findViewById(R.id.textView_shoushenk);
-         mGreenMile = findViewById(R.id.textView_zelenaia_milia);
-         mGamp = findViewById(R.id.textView_forest_gump);
+        mShoushenkTextView = findViewById(R.id.textView_shoushenk);
+        mGreenMile = findViewById(R.id.textView_zelenaia_milia);
+        mGamp = findViewById(R.id.textView_forest_gump);
 
         if (savedInstanceState != null) {
             mShoushenkTextView.setTextColor(savedInstanceState.getInt("Shoushenk_color"));
@@ -41,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     final static int OUR_REQUEST_CODE = 100;
+    final static String ANSWER_CHECKBOX = "answer_checkbox";
+    final static String ANSWER_COMMENT = "answer_comment";
 
     public void onClickButton(View view) {
         int id = view.getId();
@@ -73,8 +81,20 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("img", mImage);
             intent.putExtra("imgDescription", mDescription);
 
-            startActivity(intent);
+            startActivityForResult(intent, OUR_REQUEST_CODE);
 
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OUR_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                answerCheckBox = data.getStringExtra(ANSWER_CHECKBOX);
+                answerComment = data.getStringExtra(ANSWER_COMMENT);
+            }
+            Log.d(TAG, "Check box: " + answerCheckBox + "\n" + "Comment: " + answerComment);
         }
     }
 
