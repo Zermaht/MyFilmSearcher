@@ -2,6 +2,7 @@ package com.hfad.myfilmsearcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -73,5 +74,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 
         }
+    }
+
+    public void onClickInviteButton(View view) {
+        String mimeType = "text/plain";
+        int id = view.getId();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Давай посмотрим ");
+
+        switch (id) {
+            case R.id.button_shoushenk_INVITE:
+                stringBuilder.append("Побег из Шоушенка?");
+                break;
+            case R.id.button_forest_gamp_INVITE:
+                stringBuilder.append("Форест Гамп?");
+                break;
+            case R.id.button_zelenaia_milia_INVITE:
+                stringBuilder.append("Зеленую милю?");
+                break;
+        }
+
+        ShareCompat.IntentBuilder
+                .from(this)
+                .setType(mimeType)
+                .setChooserTitle("Отправить приглашение...")
+                .setText(stringBuilder.toString())
+                .startChooser();
     }
 }

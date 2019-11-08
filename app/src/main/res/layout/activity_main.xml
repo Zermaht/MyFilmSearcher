@@ -30,11 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_pobeg_is_shoushenka" />
 
@@ -56,11 +54,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_Green_mile" />
 
@@ -84,12 +80,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_Gamp" />
 
@@ -139,13 +133,38 @@
         app:layout_constraintTop_toBottomOf="@+id/button_zelenaia_milia" />
 
         <Button
-            android:id="@+id/priglasit_druga"
+            android:id="@+id/button_forest_gamp_INVITE"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:onClick="onClickInviteButton"
             android:text="@string/priglasit_druga_button"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_Gamp" />
+
+        <Button
+            android:id="@+id/button_shoushenk_INVITE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="onClickInviteButton"
+            android:text="@string/priglasit_druga_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_pobeg_is_shoushenka" />
+
+        <Button
+            android:id="@+id/button_zelenaia_milia_INVITE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="onClickInviteButton"
+            android:text="@string/priglasit_druga_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_Green_mile" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
