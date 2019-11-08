@@ -15,5 +15,6 @@
     <string name="detali_button">Детали</string>
     <string name="check_box_like">Нравится</string>
     <string name="comment">Комментарий...</string>
+    <string name="priglasit_druga_button">Пригласить</string>
 
 </resources>
