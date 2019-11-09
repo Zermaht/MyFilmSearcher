@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -62,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
                 mImage = R.drawable.pobeg_iz_shoushenka;
                 mDescription = R.string.shoushenk;
                 break;
-            case R.id.button_forest_gamp:
+            case R.id.button_forestGamp:
                 mTextView = mGamp;
                 mImage = R.drawable.forest_gamp;
                 mDescription = R.string.forest_gamp;
                 break;
-            case R.id.button_zelenaia_milia:
+            case R.id.button_zelenaiaMilia:
                 mTextView = mGreenMile;
                 mImage = R.drawable.zelenaia_milia;
                 mDescription = R.string.zelenaia_milia;
@@ -100,21 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickInviteButton(View view) {
         String mimeType = "text/plain";
-        int id = view.getId();
+        Button button = findViewById(view.getId());
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Давай посмотрим ");
-
-        switch (id) {
-            case R.id.button_shoushenk_INVITE:
-                stringBuilder.append("Побег из Шоушенка?");
-                break;
-            case R.id.button_forest_gamp_INVITE:
-                stringBuilder.append("Форест Гамп?");
-                break;
-            case R.id.button_zelenaia_milia_INVITE:
-                stringBuilder.append("Зеленую милю?");
-                break;
-        }
+        stringBuilder.append("Давай посмотрим ").append(button.getContentDescription().toString());
 
         ShareCompat.IntentBuilder
                 .from(this)

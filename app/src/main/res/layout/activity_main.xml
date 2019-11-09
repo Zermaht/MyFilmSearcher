@@ -31,6 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:contentDescription="shoushenk"
+            android:linksClickable="false"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,11 +52,12 @@
         app:srcCompat="@drawable/zelenaia_milia" />
 
         <Button
-            android:id="@+id/button_zelenaia_milia"
+            android:id="@+id/button_zelenaiaMilia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:contentDescription="greenMile"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,12 +78,13 @@
         app:srcCompat="@drawable/forest_gamp" />
 
         <Button
-            android:id="@+id/button_forest_gamp"
+            android:id="@+id/button_forestGamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:contentDescription="forestGamp"
             android:onClick="onClickButton"
             android:text="@string/detali_button"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -130,7 +134,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_zelenaia_milia" />
+        app:layout_constraintTop_toBottomOf="@+id/button_zelenaiaMilia" />
 
         <Button
             android:id="@+id/button_forest_gamp_INVITE"
@@ -139,6 +143,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:contentDescription="@string/forest_gamp"
             android:onClick="onClickInviteButton"
             android:text="@string/priglasit_druga_button"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -151,6 +156,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/shoushenk"
             android:onClick="onClickInviteButton"
             android:text="@string/priglasit_druga_button"
             app:layout_constraintEnd_toEndOf="parent"
@@ -162,6 +168,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/zelenaia_milia"
             android:onClick="onClickInviteButton"
             android:text="@string/priglasit_druga_button"
             app:layout_constraintEnd_toEndOf="parent"

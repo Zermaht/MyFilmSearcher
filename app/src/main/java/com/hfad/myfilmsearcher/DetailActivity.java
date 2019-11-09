@@ -69,5 +69,4 @@ public class DetailActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-
 }
