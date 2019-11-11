@@ -1,16 +1,18 @@
 package com.hfad.myfilmsearcher;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ShareCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private String answerCheckBox;
     private String answerComment;
 
+    private ArrayList<Films> filmsArray = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
         mGreenMile = findViewById(R.id.textView_zelenaia_milia);
         mGamp = findViewById(R.id.textView_forest_gump);
 
+        filmsArray.add(new Films(findViewById(R.id.textView_shoushenk), getString(R.string.shoushenk_opisanie), R.drawable.pobeg_iz_shoushenka));
+        filmsArray.add(new Films(findViewById(R.id.textView_zelenaia_milia), getString(R.string.zelenaia_milia_opisanie), R.drawable.zelenaia_milia));
+        filmsArray.add(new Films(findViewById(R.id.textView_forest_gump), getString(R.string.forest_gamp_opisanie), R.drawable.forest_gamp));
+
         if (savedInstanceState != null) {
             mShoushenkTextView.setTextColor(savedInstanceState.getInt("Shoushenk_color"));
             mGreenMile.setTextColor(savedInstanceState.getInt("Green_mile_color"));
             mGamp.setTextColor(savedInstanceState.getInt("Gamp_color"));
         }
-
     }
 
     @Override
@@ -52,39 +59,18 @@ public class MainActivity extends AppCompatActivity {
     final static String ANSWER_COMMENT = "answer_comment";
 
     public void onClickButton(View view) {
-        int id = view.getId();
-        TextView mTextView = null;
-        int mImage = 0;
-        int mDescription = 0;
+        Button button = findViewById(view.getId());
+        int id = Integer.parseInt(button.getContentDescription().toString());
+        Films film = filmsArray.get(id);
 
-        switch (id) {
-            case R.id.button_shoushenk:
-                mTextView = mShoushenkTextView;
-                mImage = R.drawable.pobeg_iz_shoushenka;
-                mDescription = R.string.shoushenk;
-                break;
-            case R.id.button_forestGamp:
-                mTextView = mGamp;
-                mImage = R.drawable.forest_gamp;
-                mDescription = R.string.forest_gamp;
-                break;
-            case R.id.button_zelenaiaMilia:
-                mTextView = mGreenMile;
-                mImage = R.drawable.zelenaia_milia;
-                mDescription = R.string.zelenaia_milia;
-                break;
-        }
+        TextView filmTextView = film.getFilmTextView();
+        filmTextView.setTextColor(getResources().getColor(R.color.colorAccent));
 
-        if (mTextView != null && mImage != 0 && mDescription != 0) {
-            mTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("img", film.getImage());
+        intent.putExtra("Description", film.getDescription());
 
-            Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra("img", mImage);
-            intent.putExtra("imgDescription", mDescription);
-
-            startActivityForResult(intent, OUR_REQUEST_CODE);
-
-        }
+        startActivityForResult(intent, OUR_REQUEST_CODE);
     }
 
     @Override
@@ -113,3 +99,4 @@ public class MainActivity extends AppCompatActivity {
                 .startChooser();
     }
 }
+
