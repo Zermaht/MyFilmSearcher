@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.otus.demo.materialcardview.MainActivity">
+    <item
+        android:id="@+id/action_invite"
+        android:orderInCategory="100"
+        android:title="@string/priglasit_druga_button"
+        app:showAsAction="never" />
+</menu>
