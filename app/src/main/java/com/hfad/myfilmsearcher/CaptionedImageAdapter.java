@@ -20,7 +20,7 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
     private Listener listener;
 
     interface Listener {
-        void onClick(int position);
+        void onClick(int position, CardView cardView);
     }
 
     @NonNull
@@ -45,7 +45,7 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
             @Override
             public void onClick(View v) {
                 if (listener != null){
-                    listener.onClick(position);
+                    listener.onClick(position, cardView);
                 }
             }
         });

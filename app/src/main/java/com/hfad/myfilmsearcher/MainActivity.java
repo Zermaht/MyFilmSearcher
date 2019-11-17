@@ -1,17 +1,24 @@
 package com.hfad.myfilmsearcher;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ShareCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -102,14 +109,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         adapter.setListener(new CaptionedImageAdapter.Listener() {
             @Override
-            public void onClick(int position) {
+            public void onClick(int position, CardView cardView) {
                 String filmDescription = filmsArray.get(position).getDescription();
                 int filmImage = filmImages[position];
 
-                Intent intent = new Intent(getBaseContext(), DetailActivity.class);
-                intent.putExtra("img", filmImage);
-                intent.putExtra("Description", filmDescription);
-                startActivityForResult(intent, OUR_REQUEST_CODE);
+                ObjectAnimator rotation = ObjectAnimator.ofFloat(cardView, "rotation", 5);
+
+                final AnimatorSet set =new AnimatorSet();
+                set.play(rotation);
+                set.setDuration(500);
+                set.setInterpolator(new DecelerateInterpolator());
+
+                set.start();
+                set.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        cardView.setRotation(0);
+                        Intent intent = new Intent(getBaseContext(), DetailActivity.class);
+                        intent.putExtra("img", filmImage);
+                        intent.putExtra("Description", filmDescription);
+                        startActivityForResult(intent, OUR_REQUEST_CODE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+
             }
         });
 
