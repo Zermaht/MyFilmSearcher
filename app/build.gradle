@@ -25,6 +25,8 @@ android {
 
 dependencies {
     //noinspection GradleCompatible
+    def drawerlayout_version = "1.0.0"
+    implementation "androidx.drawerlayout:drawerlayout:$drawerlayout_version"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:cardview-v7:28.0.0'

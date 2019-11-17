@@ -17,4 +17,12 @@
     <string name="comment">Комментарий...</string>
     <string name="priglasit_druga_button">Пригласить друга</string>
 
+    <string name="drawer_main">Главный экран</string>
+    <string name="drawer_about">О приложении</string>
+
+    <string name="nav_header_title">Это лучшее приложение мира</string>
+    <string name="nav_header_subtitle">Это подпись лучшего приложения мира</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+
 </resources>
