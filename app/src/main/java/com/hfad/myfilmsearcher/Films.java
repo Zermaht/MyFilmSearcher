@@ -7,16 +7,17 @@ import androidx.annotation.NonNull;
 public class Films {
     private String description;
     private int image;
-    private TextView filmTextView;
+    private String filmName;
 
-    Films (TextView filmTextView, String description, int image) {
-        this.filmTextView = filmTextView;
+    Films (String filmName, String description, int image) {
+        this.filmName = filmName;
         this.description = description;
         this.image = image;
     }
 
-    public TextView getFilmTextView() {
-        return filmTextView;
+
+    public String getFilmName() {
+        return filmName;
     }
 
     public String getDescription() {
@@ -30,6 +31,6 @@ public class Films {
     @NonNull
     @Override
     public String toString() {
-        return filmTextView.getText().toString();
+        return filmName;
     }
 }
