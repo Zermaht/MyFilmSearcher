@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -48,10 +49,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        filmsArray.add(new Films(getString(R.string.shoushenk), getString(R.string.shoushenk_opisanie), R.drawable.pobeg_iz_shoushenka));
-        filmsArray.add(new Films(getString(R.string.zelenaia_milia), getString(R.string.zelenaia_milia_opisanie), R.drawable.zelenaia_milia));
-        filmsArray.add(new Films(getString(R.string.forest_gamp), getString(R.string.forest_gamp_opisanie), R.drawable.forest_gamp));
-
+        if (savedInstanceState == null) {
+            filmsArray.add(new Films(getString(R.string.shoushenk), getString(R.string.shoushenk_opisanie), R.drawable.pobeg_iz_shoushenka));
+            filmsArray.add(new Films(getString(R.string.zelenaia_milia), getString(R.string.zelenaia_milia_opisanie), R.drawable.zelenaia_milia));
+            filmsArray.add(new Films(getString(R.string.forest_gamp), getString(R.string.forest_gamp_opisanie), R.drawable.forest_gamp));
+        }
         drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle =new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(toggle);
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         initRecyclerView();
+
     }
 
     @Override
@@ -78,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setChooserTitle("Отправить приглашение...")
                     .setText("Давай посмотрим фильм?")
                     .startChooser();
+        } else if (item.getItemId() == R.id.action_add_film) {
+            Intent intent = new Intent(this, AddNewFilmActivity.class);
+            startActivityForResult(intent, 1);
         }
         return true;
     }
@@ -166,7 +172,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 answerComment = data.getStringExtra(ANSWER_COMMENT);
             }
             Log.d(TAG, "Check box: " + answerCheckBox + "\n" + "Comment: " + answerComment);
+        } else if (requestCode == 1){
+            if (resultCode == RESULT_OK && data !=null){
+                String filmName = data.getStringExtra("filmName");
+                String filmDescription = data.getStringExtra("filmDescription");
+                if (!filmName.equals("") && !filmDescription.equals("")) {
+                    filmsArray.add(new Films(filmName, filmDescription, R.drawable.android_logo));
+                    initRecyclerView();
+                    Snackbar.make(findViewById(R.id.drawer_layout), "Фильм добавлен", Snackbar.LENGTH_SHORT).show();
+                }
+            }
         }
+    }
+
+    public static int returnCount() {
+        return filmsArray.size();
     }
 
 }

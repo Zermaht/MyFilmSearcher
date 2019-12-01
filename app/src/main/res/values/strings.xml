@@ -24,5 +24,14 @@
     <string name="nav_header_subtitle">Это подпись лучшего приложения мира</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+    <string name="add_new_film_menu">Добавить фильм</string>
+    <string name="new_film_name">Название фильма</string>
+    <string name="new_film_description">Описание фильма</string>
+    <string name="ujasi">Ужасы</string>
+    <string name="dramma">Драмма</string>
+    <string name="comedia">Комедия</string>
+    <string name="triller">Триллер</string>
+    <string name="prikluchenie">Приключение</string>
+    <string name="add_film">Добавить фильм</string>
 
 </resources>

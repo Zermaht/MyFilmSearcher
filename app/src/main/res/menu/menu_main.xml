@@ -5,7 +5,14 @@
     tools:context="ru.otus.demo.materialcardview.MainActivity">
     <item
         android:id="@+id/action_invite"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         android:title="@string/priglasit_druga_button"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_film"
+        android:orderInCategory="2"
+        android:title="@string/add_new_film_menu"
+        app:showAsAction="never"
+        />
 </menu>

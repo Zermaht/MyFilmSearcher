@@ -58,7 +58,7 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
 
     @Override
     public int getItemCount() {
-        return 3;
+        return MainActivity.returnCount();
     }
 
     public void setListener(Listener listener){
