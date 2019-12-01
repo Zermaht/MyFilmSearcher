@@ -33,5 +33,6 @@
     <string name="triller">Триллер</string>
     <string name="prikluchenie">Приключение</string>
     <string name="add_film">Добавить фильм</string>
+    <string name="drawer_exit">Выйти</string>
 
 </resources>
