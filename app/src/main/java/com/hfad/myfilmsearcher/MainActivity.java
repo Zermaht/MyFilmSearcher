@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -26,26 +27,22 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ShareCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AddFilmFragment.onAddFilmListener {
 
     final static String TAG = MainActivity.class.getSimpleName();
 
-    private String answerCheckBox;
-    private String answerComment;
-
-    static ArrayList<Films> filmsArray = new ArrayList<>();
-
-    private RecyclerView recyclerView;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +51,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (savedInstanceState == null) {
-            filmsArray.add(new Films(getString(R.string.shoushenk), getString(R.string.shoushenk_opisanie), R.drawable.pobeg_iz_shoushenka));
-            filmsArray.add(new Films(getString(R.string.zelenaia_milia), getString(R.string.zelenaia_milia_opisanie), R.drawable.zelenaia_milia));
-            filmsArray.add(new Films(getString(R.string.forest_gamp), getString(R.string.forest_gamp_opisanie), R.drawable.forest_gamp));
-        }
         drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle =new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        initRecyclerView();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new FilmsFragment(), FilmsFragment.TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+        }
 
     }
 
@@ -87,8 +85,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setText("Давай посмотрим фильм?")
                     .startChooser();
         } else if (item.getItemId() == R.id.action_add_film) {
-            Intent intent = new Intent(this, AddNewFilmActivity.class);
-            startActivityForResult(intent, 1);
+            AddFilmFragment addFilmFragment = new AddFilmFragment();
+            addFilmFragment.setListener(this);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, addFilmFragment, AddFilmFragment.TAG)
+                    .commit();
         }
         return true;
     }
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             finish();
                         }
                     })
-                    .setNegativeButton("No", null)
+                    .setNegativeButton("Нет", null)
                     .show();
         }
 
@@ -116,100 +120,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //Инициализация recyclerView
-    private void initRecyclerView() {
-        recyclerView = findViewById(R.id.recycler_view_main);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        String[] filmNames = new String[filmsArray.size()];
-        for (int i = 0; i<filmNames.length; i++){
-            filmNames[i] = filmsArray.get(i).getFilmName();
-        }
-
-        int[] filmImages = new int[filmsArray.size()];
-        for (int i = 0; i<filmNames.length; i++){
-            filmImages[i] = filmsArray.get(i).getImage();
-        }
-
-        CaptionedImageAdapter adapter = new CaptionedImageAdapter(filmNames, filmImages);
-        recyclerView.setAdapter(adapter);
-
-        adapter.setListener(new CaptionedImageAdapter.Listener() {
-            @Override
-            public void onClick(int position, CardView cardView) {
-                String filmDescription = filmsArray.get(position).getDescription();
-                int filmImage = filmImages[position];
-
-                ObjectAnimator rotation = ObjectAnimator.ofFloat(cardView, "rotation", 5);
-
-                final AnimatorSet set =new AnimatorSet();
-                set.play(rotation);
-                set.setDuration(500);
-                set.setInterpolator(new DecelerateInterpolator());
-
-                set.start();
-                set.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        cardView.setRotation(0);
-                        Intent intent = new Intent(getBaseContext(), DetailActivity.class);
-                        intent.putExtra("img", filmImage);
-                        intent.putExtra("Description", filmDescription);
-                        startActivityForResult(intent, OUR_REQUEST_CODE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-
-            }
-        });
-
-    }
-
-    final static int OUR_REQUEST_CODE = 100;
-    final static String ANSWER_CHECKBOX = "answer_checkbox";
-    final static String ANSWER_COMMENT = "answer_comment";
-
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == OUR_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && data != null) {
-                answerCheckBox = data.getStringExtra(ANSWER_CHECKBOX);
-                answerComment = data.getStringExtra(ANSWER_COMMENT);
-            }
-            Log.d(TAG, "Check box: " + answerCheckBox + "\n" + "Comment: " + answerComment);
-        } else if (requestCode == 1){
-            if (resultCode == RESULT_OK && data !=null){
-                String filmName = data.getStringExtra("filmName");
-                String filmDescription = data.getStringExtra("filmDescription");
-                if (!filmName.equals("") && !filmDescription.equals("")) {
-                    filmsArray.add(new Films(filmName, filmDescription, R.drawable.android_logo));
-                    initRecyclerView();
-                    Snackbar.make(findViewById(R.id.drawer_layout), "Фильм добавлен", Snackbar.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    public static int returnCount() {
-        return filmsArray.size();
+    public void onAddFilmClick(String filmName, String filmDescription) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .replace(R.id.fragment_container, FilmsFragment.newInstance(filmName, filmDescription), FilmsFragment.TAG)
+                    .commit();
     }
 
 }
