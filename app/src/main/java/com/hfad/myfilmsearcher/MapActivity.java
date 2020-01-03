@@ -13,13 +13,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private double latitude;
@@ -47,7 +40,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         map.setMinZoomPreference(10);
 
-        for (CinemaJson.Result result: MainActivity.cinemasList) {
+        for (CinemaJson.Result result : MainActivity.cinemasList) {
             String cinema_name = result.getName();
             LatLng ciema_position = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
 
