@@ -7,16 +7,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="@string/drawer_main" />
+            android:title="@string/drawer_main"
+            android:icon="@drawable/ic_home_24px"/>
 
     </group>
 
     <item
         android:id="@+id/nav_about"
-        android:title="@string/drawer_about" />
+        android:title="@string/drawer_about"
+        android:icon="@drawable/ic_about_24px"/>
 
     <item
         android:id="@+id/nav_exit"
-        android:title="@string/drawer_exit"/>
+        android:title="@string/drawer_exit"
+        android:icon="@drawable/ic_cancel_24px"/>
 
 </menu>

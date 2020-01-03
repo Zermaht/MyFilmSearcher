@@ -34,5 +34,11 @@
     <string name="prikluchenie">Приключение</string>
     <string name="add_film">Добавить фильм</string>
     <string name="drawer_exit">Выйти</string>
+    <string name="navigation_name">Kovalev Andrei</string>
+    <string name="navigation_email">andruxa040@gmail.com</string>
+    <string name="favorites">Избранное</string>
+    <string name="delete">Удалить</string>
+    <string name="add">Добавить</string>
+    <string name="cinema">Кинотеатры</string>
 
 </resources>

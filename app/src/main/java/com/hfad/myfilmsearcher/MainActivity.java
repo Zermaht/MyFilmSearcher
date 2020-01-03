@@ -1,63 +1,57 @@
 package com.hfad.myfilmsearcher;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AddFilmFragment.onAddFilmListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity implements AddFilmFragment.onAddFilmListener {
 
     final static String TAG = MainActivity.class.getSimpleName();
+    final static int MY_REQUEST_CODE = 23;
 
-    private DrawerLayout drawerLayout;
+    BottomAppBar bar;
+    FloatingActionButton fab;
+
+    static List<Films> favorites = new ArrayList<>();
+    static LatLng target_location;
+    static List<CinemaJson.Result> cinemasList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        bar = findViewById(R.id.bottom_app_bar);
+        setSupportActionBar(bar);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle =new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        getLastLocation();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -66,6 +60,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         }
+
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bar.getFabAlignmentMode() == BottomAppBar.FAB_ALIGNMENT_MODE_CENTER) {
+                    AddFilmFragment addFilmFragment = new AddFilmFragment();
+                    addFilmFragment.setListener(MainActivity.this);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container, addFilmFragment, AddFilmFragment.TAG)
+                            .commit();
+                    bar.performShow();
+                } else {
+                    getSupportFragmentManager().popBackStack();
+                }
+            }
+
+        });
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_CODE);
 
     }
 
@@ -77,57 +94,113 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_invite) {
-            ShareCompat.IntentBuilder
-                    .from(this)
-                    .setType("text/plain")
-                    .setChooserTitle("Отправить приглашение...")
-                    .setText("Давай посмотрим фильм?")
-                    .startChooser();
-        } else if (item.getItemId() == R.id.action_add_film) {
-            AddFilmFragment addFilmFragment = new AddFilmFragment();
-            addFilmFragment.setListener(this);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .addToBackStack(null)
-                    .replace(R.id.fragment_container, addFilmFragment, AddFilmFragment.TAG)
-                    .commit();
+        switch (item.getItemId()) {
+            case R.id.action_invite:
+                ShareCompat.IntentBuilder
+                        .from(this)
+                        .setType("text/plain")
+                        .setChooserTitle("Отправить приглашение...")
+                        .setText("Давай посмотрим фильм?")
+                        .startChooser();
+                break;
+            case android.R.id.home:
+                BottomNavigationDrawerFragment.newInstance().show(getSupportFragmentManager(), BottomNavigationDrawerFragment.TAG);
+                break;
+            case R.id.action_favorites:
+                if (favorites.size() != 0) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container, new FavoritesFragment(), FavoritesFragment.TAG)
+                            .commit();
+                    bar.performShow();
+                    switchFabButton();
+                    bar.replaceMenu(R.menu.menu_main_favorites);
+                    break;
+                } else
+                    Snackbar.make(findViewById(R.id.fragment_container), "Список избранного пуст", Snackbar.LENGTH_SHORT).show();
+                break;
+            case R.id.action_cinema:
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra("latitude", target_location.latitude);
+                intent.putExtra("longitude", target_location.longitude);
+                startActivity(intent);
+                break;
+
         }
-        return true;
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        int id = menuItem.getItemId();
-
-        if (id == R.id.nav_exit) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Выход")
-                    .setMessage("Вы действительно хотите выйти из приложения?")
-                    .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    })
-                    .setNegativeButton("Нет", null)
-                    .show();
-        }
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void onAddFilmClick(String filmName, String filmDescription) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .replace(R.id.fragment_container, FilmsFragment.newInstance(filmName, filmDescription), FilmsFragment.TAG)
-                    .commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, FilmsFragment.newInstance(filmName, filmDescription), FilmsFragment.TAG)
+                .commit();
     }
 
+    void switchFabButton() {
+        Fragment filmsFragment = getVisibleFragment();
+        if (filmsFragment instanceof FilmsFragment) {
+            bar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+            fab.setImageResource(R.drawable.ic_add_24px);
+        } else {
+            bar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+            fab.setImageResource(R.drawable.ic_reply_24px);
+        }
+        bar.replaceMenu(R.menu.menu_main);
+    }
+
+    public Fragment getVisibleFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                if (fragment != null && fragment.isVisible())
+                    return fragment;
+            }
+        }
+        return null;
+    }
+
+    void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            FusedLocationProviderClient locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            locationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        target_location = new LatLng(location.getLatitude(), location.getLongitude());
+                        setCinemasList();
+                    }
+                }
+            });
+        }
+    }
+
+    void setCinemasList() {
+        String location = target_location.latitude + "," + target_location.longitude;
+        FilmSearcherApp.getInstance().cinemaService.getCinemasByLocation(location, 10000, "movie_theater", "AIzaSyA43ZBsSquDZMUZJPs_IWTeHx6A2LxZK3E").enqueue(new Callback<CinemaJson>() {
+            @Override
+            public void onResponse(Call<CinemaJson> call, Response<CinemaJson> response) {
+                if (response.isSuccessful()) {
+                    CinemaJson cinemaJson = response.body();
+                    cinemasList = cinemaJson.getResults();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CinemaJson> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        switchFabButton();
+    }
 }
 

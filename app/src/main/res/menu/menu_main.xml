@@ -10,9 +10,16 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_add_film"
+        android:id="@+id/action_favorites"
         android:orderInCategory="2"
-        android:title="@string/add_new_film_menu"
-        app:showAsAction="never"
-        />
+        android:title="@string/favorites"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_favorite_black_24dp"/>
+
+    <item
+        android:id="@+id/action_cinema"
+        android:orderInCategory="3"
+        android:title="@string/cinema"
+        app:showAsAction="never"/>
+
 </menu>

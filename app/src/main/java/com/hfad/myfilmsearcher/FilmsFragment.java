@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +21,16 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FilmsFragment extends Fragment {
 
@@ -26,7 +38,7 @@ public class FilmsFragment extends Fragment {
     private static final String EXTRA_NEW_FILM_NAME = "new film name";
     private static final String EXTRA_NEW_FILM_DESCRIPTION = "new film description";
 
-    private static ArrayList<Films> filmsArray = new ArrayList<>();
+    static ArrayList<Films> filmsArray = new ArrayList<>();
     private RecyclerView recyclerView;
 
     public static FilmsFragment newInstance(String filmName, String filmDescription) {
@@ -42,11 +54,13 @@ public class FilmsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (filmsArray.size() == 0) {
-            filmsArray.add(new Films(getString(R.string.shoushenk), getString(R.string.shoushenk_opisanie), R.drawable.pobeg_iz_shoushenka));
-            filmsArray.add(new Films(getString(R.string.zelenaia_milia), getString(R.string.zelenaia_milia_opisanie), R.drawable.zelenaia_milia));
-            filmsArray.add(new Films(getString(R.string.forest_gamp), getString(R.string.forest_gamp_opisanie), R.drawable.forest_gamp));
-        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).switchFabButton();
     }
 
     @Nullable
@@ -65,11 +79,11 @@ public class FilmsFragment extends Fragment {
         if (getArguments() != null) {
             String filmName = getArguments().getString(EXTRA_NEW_FILM_NAME);
             String filmDescription = getArguments().getString(EXTRA_NEW_FILM_DESCRIPTION);
-            filmsArray.add(new Films(filmName, filmDescription, R.drawable.android_logo));
+            filmsArray.add(new Films(filmName, filmDescription, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH2h5v6TcvdTnyM9_RUd1C6WOt_ht1ALW55aPa9J26k0ZBj_v7&s"));
             setArguments(null);
         }
 
-        initRecyclerView();
+        downloadFilms();
     }
 
     private void initRecyclerView() {
@@ -77,28 +91,29 @@ public class FilmsFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         String[] filmNames = new String[filmsArray.size()];
-        for (int i = 0; i<filmNames.length; i++){
+        for (int i = 0; i < filmNames.length; i++) {
             filmNames[i] = filmsArray.get(i).getFilmName();
         }
 
-        int[] filmImages = new int[filmsArray.size()];
-        for (int i = 0; i<filmNames.length; i++){
-            filmImages[i] = filmsArray.get(i).getImage();
+
+        String[] filmsImagesUrl = new String[filmsArray.size()];
+        for (int i = 0; i < filmsImagesUrl.length; i++) {
+            filmsImagesUrl[i] = filmsArray.get(i).getImageUrl();
         }
 
-        CaptionedImageAdapter adapter = new CaptionedImageAdapter(filmNames, filmImages);
+        CaptionedImageAdapter adapter = new CaptionedImageAdapter(filmNames, filmsImagesUrl);
         recyclerView.setAdapter(adapter);
 
         adapter.setListener(new CaptionedImageAdapter.Listener() {
             @Override
             public void onClick(int position, CardView cardView) {
                 String filmDescription = filmsArray.get(position).getDescription();
-                int filmImage = filmImages[position];
+                String filmImage = filmsImagesUrl[position];
 
                 ObjectAnimator scaleY = ObjectAnimator.ofFloat(cardView, "scaleY", 1.01f);
                 ObjectAnimator scaleX = ObjectAnimator.ofFloat(cardView, "scaleX", 1.01f);
 
-                final AnimatorSet set =new AnimatorSet();
+                final AnimatorSet set = new AnimatorSet();
                 set.play(scaleY).with(scaleX);
                 set.setDuration(300);
                 set.setInterpolator(new DecelerateInterpolator());
@@ -107,7 +122,6 @@ public class FilmsFragment extends Fragment {
                 set.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-
                     }
 
                     @Override
@@ -120,20 +134,79 @@ public class FilmsFragment extends Fragment {
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                                 .addToBackStack(null)
                                 .commit();
+                        BottomAppBar bar = getActivity().findViewById(R.id.bottom_app_bar);
+                        bar.performHide();
                     }
 
                     @Override
                     public void onAnimationCancel(Animator animation) {
-
                     }
 
                     @Override
                     public void onAnimationRepeat(Animator animation) {
-
                     }
                 });
             }
+
+            @Override
+            public void onLongClick(int position, CardView cardView) {
+                String filmDescription = filmsArray.get(position).getDescription();
+                String filmImage = filmsImagesUrl[position];
+                String filmName = filmsArray.get(position).getFilmName();
+
+                PopupMenu popupMenu = new PopupMenu(getContext(), cardView);
+                popupMenu.inflate(R.menu.films_fragment_popmenu);
+                popupMenu.show();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        boolean isFavorite = false;
+                        for (Films x : MainActivity.favorites) {
+                            if (x.getFilmName().equals(filmName)) {
+                                Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Этот фильм уже есть в избранном", Snackbar.LENGTH_SHORT).show();
+                                isFavorite = true;
+                            }
+                        }
+                        if (!isFavorite) {
+                            MainActivity.favorites.add(new Films(filmName, filmDescription, filmImage));
+                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Фильм добавлен в избранное", Snackbar.LENGTH_SHORT).show();
+                        }
+
+                        return true;
+                    }
+                });
+
+            }
         });
+
+    }
+
+    public void downloadFilms() {
+        if (filmsArray.isEmpty()) {
+            FilmSearcherApp.getInstance().filmsService.getMovies().enqueue(new Callback<List<FIlmsJson>>() {
+                @Override
+                public void onResponse(Call<List<FIlmsJson>> call, Response<List<FIlmsJson>> response) {
+                    if (response.isSuccessful()) {
+                        List<FIlmsJson> fIlmsJsons = response.body();
+                        for (FIlmsJson fIlmsJson : fIlmsJsons) {
+                            filmsArray.add(new Films(fIlmsJson));
+                        }
+                        initRecyclerView();
+                    } else {
+                        Toast.makeText(getContext(), "FAIL " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<FIlmsJson>> call, Throwable t) {
+                    Toast.makeText(getContext(), "FAILURE " + t.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        } else {
+            initRecyclerView();
+        }
+
     }
 
     @Override

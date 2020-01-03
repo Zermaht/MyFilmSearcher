@@ -1,7 +1,6 @@
 package com.hfad.myfilmsearcher;
 
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +12,19 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAdapter.ViewHolder> {
 
     private String[] filmName;
     private int[] imageId;
+    private String[] imageUrl;
     private Listener listener;
 
     interface Listener {
         void onClick(int position, CardView cardView);
+
+        void onLongClick(int position, CardView cardView);
     }
 
     @NonNull
@@ -35,25 +39,37 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
         ImageView imageView = cardView.findViewById(R.id.info_image);
-        Drawable drawable = ContextCompat.getDrawable(cardView.getContext(), imageId[position]);
-        imageView.setImageDrawable(drawable);
-        imageView.setContentDescription(filmName[position]);
         TextView textView = cardView.findViewById(R.id.info_film);
         textView.setText(filmName[position]);
+
+        Glide.with(cardView.getContext())
+                .load(imageUrl[position])
+                .into(imageView);
+
 
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null){
+                if (listener != null) {
                     listener.onClick(position, cardView);
                 }
             }
         });
+
+        cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (listener != null) {
+                    listener.onLongClick(position, cardView);
+                }
+                return true;
+            }
+        });
     }
 
-    public CaptionedImageAdapter (String[] filmName, int[] imageId) {
+    public CaptionedImageAdapter(String[] filmName, String[] imageUrl) {
         this.filmName = filmName;
-        this.imageId = imageId;
+        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -61,11 +77,11 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
         return FilmsFragment.returnCount();
     }
 
-    public void setListener(Listener listener){
+    public void setListener(Listener listener) {
         this.listener = listener;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
 
         public ViewHolder(CardView v) {

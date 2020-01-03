@@ -6,13 +6,18 @@ import androidx.annotation.NonNull;
 
 public class Films {
     private String description;
-    private int image;
     private String filmName;
+    private String imageUrl;
 
-    Films (String filmName, String description, int image) {
+    Films (String filmName, String description, String image) {
         this.filmName = filmName;
         this.description = description;
-        this.image = image;
+        this.imageUrl = image;
+    }
+
+    Films(FIlmsJson fIlmsJson) {
+        this.filmName = fIlmsJson.title;
+        this.imageUrl = fIlmsJson.img;
     }
 
 
@@ -24,9 +29,7 @@ public class Films {
         return description;
     }
 
-    public int getImage() {
-        return image;
-    }
+    public String getImageUrl() {return imageUrl;}
 
     @NonNull
     @Override

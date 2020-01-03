@@ -44,6 +44,8 @@ public class AddFilmFragment extends Fragment {
 
                 if (listener != null && !filmDescriptionSend.equals("") && !filmNameSend.equals("")) {
                     listener.onAddFilmClick(filmNameSend, filmDescriptionSend);
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.switchFabButton();
                 } else {
                     Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Не заполнены необходимые поля", Snackbar.LENGTH_SHORT).show();
                 }
@@ -58,5 +60,11 @@ public class AddFilmFragment extends Fragment {
 
     public interface onAddFilmListener {
         void onAddFilmClick(String filmName, String filmDescription);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).switchFabButton();
     }
 }
