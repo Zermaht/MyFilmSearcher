@@ -42,10 +42,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         for (CinemaJson.Result result : MainActivity.cinemasList) {
             String cinema_name = result.getName();
-            LatLng ciema_position = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
+            LatLng cinema_position = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
 
             map.addMarker(new MarkerOptions()
-                    .position(ciema_position)
+                    .position(cinema_position)
                     .title(cinema_name));
         }
 
