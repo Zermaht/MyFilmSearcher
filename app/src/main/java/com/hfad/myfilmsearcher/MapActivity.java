@@ -56,37 +56,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     .title(cinema_name));
         }
 
-        /*String location = latitude + "," + longitude;
-
-
-        FilmSearcherApp.getInstance().cinemaService.getCinemasByLocation(location, 10000, "movie_theater", "AIzaSyA43ZBsSquDZMUZJPs_IWTeHx6A2LxZK3E").enqueue(new Callback<CinemaJson>() {
-            @Override
-            public void onResponse(Call<CinemaJson> call, Response<CinemaJson> response) {
-                if (response.isSuccessful()){
-                    CinemaJson cinemaJson = response.body();
-                    List<CinemaJson.Result> results = cinemaJson.getResults();
-                    double cinema_lat;
-                    double cinema_lng;
-                    String cinema_name;
-                    for (CinemaJson.Result result : results) {
-                        cinema_lat = result.getGeometry().getLocation().getLat();
-                        cinema_lng = result.getGeometry().getLocation().getLng();
-                        cinema_name = result.getName();
-                        LatLng ciema_position = new LatLng(cinema_lat, cinema_lng);
-
-                        map.addMarker(new MarkerOptions()
-                                .position(ciema_position)
-                                .title(cinema_name));
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CinemaJson> call, Throwable t) {
-
-            }
-        });*/
     }
 
 }
