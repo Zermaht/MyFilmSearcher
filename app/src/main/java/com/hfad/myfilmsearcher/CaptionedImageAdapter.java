@@ -1,6 +1,5 @@
 package com.hfad.myfilmsearcher;
 
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,7 +15,6 @@ import com.bumptech.glide.Glide;
 public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAdapter.ViewHolder> {
 
     private String[] filmName;
-    private int[] imageId;
     private String[] imageUrl;
     private Listener listener;
 

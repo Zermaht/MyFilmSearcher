@@ -1,0 +1,75 @@
+package com.hfad.myfilmsearcher.roomDB;
+
+import android.app.Application;
+
+import androidx.lifecycle.LiveData;
+
+import java.util.List;
+import java.util.concurrent.Executors;
+
+public class FilmsRepository {
+
+   private FilmsDAO dao;
+   private LiveData<List<FilmEntity>> allFilms;
+   private FilmEntity filmById;
+   private FilmEntity filmByName;
+   private List<FilmEntity> favoriteFilms;
+
+    FilmsRepository(Application application) {
+        FilmsDatabase db = FilmsDatabase.getInstance(application);
+        dao = db.filmsDAO();
+        allFilms = dao.getAllFilms();
+    }
+
+    LiveData<List<FilmEntity>> getAllFilms() {return allFilms;}
+
+    FilmEntity getFilmById(long id) {
+        filmById = dao.getFilmById(id);
+        return filmById;
+    }
+
+    FilmEntity getFilmByName(String name) {
+        filmByName = dao.getFilmByName(name);
+        return filmByName;
+    }
+
+    List<FilmEntity> getFavoriteFilms(){
+        favoriteFilms = dao.getFavoriteFilms();
+        return favoriteFilms;
+    }
+
+    void insert(FilmEntity filmEntity){
+        Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                dao.insert(filmEntity);
+            }
+        });
+    }
+
+    void insertFilms(List<FilmEntity> films) {
+        Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                dao.insertFilms(films);
+            }
+        });
+    }
+
+    void update(FilmEntity filmEntity) {
+        dao.update(filmEntity);
+    }
+
+    void delete(FilmEntity filmEntity){
+        dao.delete(filmEntity);
+    }
+
+    void deleteAll() {
+        Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                dao.deleteAll();
+            }
+        });
+    }
+}

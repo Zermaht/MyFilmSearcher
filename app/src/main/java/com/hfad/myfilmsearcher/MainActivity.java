@@ -16,6 +16,7 @@ import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +46,16 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
     static LatLng target_location;
     static List<CinemaJson.Result> cinemasList;
 
+    private FilmsViewModel filmsViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(bar);
+
+        filmsViewModel = new ViewModelProvider(this).get(FilmsViewModel.class);
 
         getLastLocation();
 

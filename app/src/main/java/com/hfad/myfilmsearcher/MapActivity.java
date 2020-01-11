@@ -10,6 +10,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -47,6 +49,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             map.addMarker(new MarkerOptions()
                     .position(cinema_position)
                     .title(cinema_name));
+
         }
 
     }
