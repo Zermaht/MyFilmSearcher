@@ -41,7 +41,6 @@ public class CinemaJson {
     }
 
 
-
     public class Result {
 
         @SerializedName("geometry")

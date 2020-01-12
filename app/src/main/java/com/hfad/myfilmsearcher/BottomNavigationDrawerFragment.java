@@ -13,17 +13,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentTransaction;
 
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class BottomNavigationDrawerFragment extends BottomSheetDialogFragment {
-
     public static final String TAG = BottomNavigationDrawerFragment.class.getSimpleName();
 
     private static BottomNavigationDrawerFragment bottomNavigationDrawerFragment = null;
 
-    static BottomNavigationDrawerFragment newInstance(){
+    static BottomNavigationDrawerFragment newInstance() {
         bottomNavigationDrawerFragment = new BottomNavigationDrawerFragment();
         return bottomNavigationDrawerFragment;
     }
@@ -50,7 +48,7 @@ public class BottomNavigationDrawerFragment extends BottomSheetDialogFragment {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.nav_home:
                         getActivity().getSupportFragmentManager()
                                 .beginTransaction()
@@ -58,7 +56,7 @@ public class BottomNavigationDrawerFragment extends BottomSheetDialogFragment {
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                                 .commit();
                         bottomNavigationDrawerFragment.dismiss();
-                        if(getActivity().getSupportFragmentManager().getBackStackEntryCount() != 0) {
+                        if (getActivity().getSupportFragmentManager().getBackStackEntryCount() != 0) {
                             MainActivity activity = (MainActivity) getActivity();
                             activity.switchFabButton();
                         }

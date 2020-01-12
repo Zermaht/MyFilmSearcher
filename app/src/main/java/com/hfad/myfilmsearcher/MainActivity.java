@@ -27,7 +27,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -42,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
     BottomAppBar bar;
     FloatingActionButton fab;
 
-    static List<Films> favorites = new ArrayList<>();
     static LatLng target_location;
     static List<CinemaJson.Result> cinemasList;
 
@@ -89,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
         });
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_CODE);
-
     }
 
     @Override
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
                 BottomNavigationDrawerFragment.newInstance().show(getSupportFragmentManager(), BottomNavigationDrawerFragment.TAG);
                 break;
             case R.id.action_favorites:
-                if (favorites.size() != 0) {
+                if (filmsViewModel.getFavoriteFilms() != null && filmsViewModel.getFavoriteFilms().size() != 0) {
                     getSupportFragmentManager()
                             .beginTransaction()
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -133,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
                 intent.putExtra("longitude", target_location.longitude);
                 startActivity(intent);
                 break;
-
         }
         return true;
     }

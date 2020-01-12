@@ -9,19 +9,27 @@ import java.util.concurrent.Executors;
 
 public class FilmsRepository {
 
-   private FilmsDAO dao;
-   private LiveData<List<FilmEntity>> allFilms;
-   private FilmEntity filmById;
-   private FilmEntity filmByName;
-   private List<FilmEntity> favoriteFilms;
+    private FilmsDAO dao;
+    private LiveData<List<FilmEntity>> allFilms;
+    private FilmEntity filmById;
+    private FilmEntity filmByName;
+    private List<FilmEntity> films;
+    private List<FilmEntity> favoriteFilms;
 
     FilmsRepository(Application application) {
         FilmsDatabase db = FilmsDatabase.getInstance(application);
         dao = db.filmsDAO();
         allFilms = dao.getAllFilms();
+        films = dao.getFilms();
     }
 
-    LiveData<List<FilmEntity>> getAllFilms() {return allFilms;}
+    LiveData<List<FilmEntity>> getAllFilms() {
+        return allFilms;
+    }
+
+    List<FilmEntity> getFilms() {
+        return films;
+    }
 
     FilmEntity getFilmById(long id) {
         filmById = dao.getFilmById(id);
@@ -33,12 +41,12 @@ public class FilmsRepository {
         return filmByName;
     }
 
-    List<FilmEntity> getFavoriteFilms(){
-        favoriteFilms = dao.getFavoriteFilms();
+    List<FilmEntity> getFavoriteFilms() {
+        favoriteFilms = dao.getFavoriteFilms(true);
         return favoriteFilms;
     }
 
-    void insert(FilmEntity filmEntity){
+    void insert(FilmEntity filmEntity) {
         Executors.newSingleThreadScheduledExecutor().execute(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +68,7 @@ public class FilmsRepository {
         dao.update(filmEntity);
     }
 
-    void delete(FilmEntity filmEntity){
+    void delete(FilmEntity filmEntity) {
         dao.delete(filmEntity);
     }
 

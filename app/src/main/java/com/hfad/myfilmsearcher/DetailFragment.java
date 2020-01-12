@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 
 public class DetailFragment extends Fragment {
-
     public static final String TAG = DetailFragment.class.getSimpleName();
 
     private static String EXTRTA_DESCRIPTION = "description";
@@ -23,7 +22,7 @@ public class DetailFragment extends Fragment {
     private String description;
     private String imageUrl;
 
-    public static DetailFragment newInstance(String imageUrl, String description) {
+    static DetailFragment newInstance(String imageUrl, String description) {
         DetailFragment fragment = new DetailFragment();
 
         Bundle bundle = new Bundle();
@@ -54,7 +53,6 @@ public class DetailFragment extends Fragment {
         Glide.with(getContext())
                 .load(imageUrl)
                 .into(imageView);
-
     }
 
     @Override

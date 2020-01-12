@@ -3,10 +3,12 @@ package com.hfad.myfilmsearcher.roomDB;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity (tableName = "films_table")
+import com.hfad.myfilmsearcher.FilmsJson;
+
+@Entity(tableName = "films_table")
 public class FilmEntity {
 
-@PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private long _id;
 
     private String name;
@@ -19,6 +21,11 @@ public class FilmEntity {
         this.description = description;
         this.imgUrl = imgUrl;
         this.isFavorite = isFavorite;
+    }
+
+    public FilmEntity(FilmsJson filmsJson) {
+        this.name = filmsJson.title;
+        this.imgUrl = filmsJson.img;
     }
 
     public long get_id() {
@@ -59,5 +66,16 @@ public class FilmEntity {
 
     public void setFavorite(boolean favorite) {
         this.isFavorite = favorite;
+    }
+
+    @Override
+    public String toString() {
+        return "FilmEntity{" +
+                "_id=" + _id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", isFavorite=" + isFavorite +
+                '}';
     }
 }

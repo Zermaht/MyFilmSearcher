@@ -11,37 +11,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.PopupMenu;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.hfad.myfilmsearcher.roomDB.FilmEntity;
+import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class FilmsFragment extends Fragment {
-
     static final String TAG = FilmsFragment.class.getSimpleName();
     private static final String EXTRA_NEW_FILM_NAME = "new film name";
     private static final String EXTRA_NEW_FILM_DESCRIPTION = "new film description";
 
-    static ArrayList<Films> filmsArray = new ArrayList<>();
-    private RecyclerView recyclerView;
+    private FilmsViewModel filmsViewModel;
+    private CaptionedImageAdapter adapter;
 
-    public static FilmsFragment newInstance(String filmName, String filmDescription) {
+    static FilmsFragment newInstance(String filmName, String filmDescription) {
         FilmsFragment filmsFragment = new FilmsFragment();
 
         Bundle bundle = new Bundle();
@@ -54,7 +52,6 @@ public class FilmsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -67,48 +64,45 @@ public class FilmsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_films, container, false);
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = view.findViewById(R.id.recycler_view_main);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_main);
+        filmsViewModel = new ViewModelProvider(this).get(FilmsViewModel.class);
 
         if (getArguments() != null) {
             String filmName = getArguments().getString(EXTRA_NEW_FILM_NAME);
             String filmDescription = getArguments().getString(EXTRA_NEW_FILM_DESCRIPTION);
-            filmsArray.add(new Films(filmName, filmDescription, "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH2h5v6TcvdTnyM9_RUd1C6WOt_ht1ALW55aPa9J26k0ZBj_v7&s"));
+            String filmImgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH2h5v6TcvdTnyM9_RUd1C6WOt_ht1ALW55aPa9J26k0ZBj_v7&s";
+            filmsViewModel.insert(new FilmEntity(filmName, filmDescription, filmImgUrl, false));
             setArguments(null);
         }
-
-        downloadFilms();
+        adapter = new CaptionedImageAdapter(getContext());
+        setListener(adapter);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.setFilms(filmsViewModel.getFilms());
+        filmsViewModel.getAllFilms().observe(this, new Observer<List<FilmEntity>>() {
+            @Override
+            public void onChanged(List<FilmEntity> filmEntities) {
+                adapter.setFilms(filmEntities);
+            }
+        });
     }
 
-    private void initRecyclerView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        String[] filmNames = new String[filmsArray.size()];
-        for (int i = 0; i < filmNames.length; i++) {
-            filmNames[i] = filmsArray.get(i).getFilmName();
-        }
-
-
-        String[] filmsImagesUrl = new String[filmsArray.size()];
-        for (int i = 0; i < filmsImagesUrl.length; i++) {
-            filmsImagesUrl[i] = filmsArray.get(i).getImageUrl();
-        }
-
-        CaptionedImageAdapter adapter = new CaptionedImageAdapter(filmNames, filmsImagesUrl);
-        recyclerView.setAdapter(adapter);
-
+    private void setListener(CaptionedImageAdapter adapter) {
         adapter.setListener(new CaptionedImageAdapter.Listener() {
             @Override
             public void onClick(int position, CardView cardView) {
-                String filmDescription = filmsArray.get(position).getDescription();
-                String filmImage = filmsImagesUrl[position];
+                TextView textView = cardView.findViewById(R.id.info_film);
+                String filmName = textView.getText().toString();
+                FilmEntity film = filmsViewModel.getFilmByName(filmName);
+
+                String filmDescription = film.getDescription();
+                String filmImage = film.getImgUrl();
 
                 ObjectAnimator scaleY = ObjectAnimator.ofFloat(cardView, "scaleY", 1.01f);
                 ObjectAnimator scaleX = ObjectAnimator.ofFloat(cardView, "scaleX", 1.01f);
@@ -150,72 +144,33 @@ public class FilmsFragment extends Fragment {
 
             @Override
             public void onLongClick(int position, CardView cardView) {
-                String filmDescription = filmsArray.get(position).getDescription();
-                String filmImage = filmsImagesUrl[position];
-                String filmName = filmsArray.get(position).getFilmName();
-
+                TextView textView = cardView.findViewById(R.id.info_film);
+                String filmName = textView.getText().toString();
+                FilmEntity film = filmsViewModel.getFilmByName(filmName);
+                //TODO Тут приходит ноль в film. Разобраться почему
                 PopupMenu popupMenu = new PopupMenu(getContext(), cardView);
                 popupMenu.inflate(R.menu.films_fragment_popmenu);
                 popupMenu.show();
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        boolean isFavorite = false;
-                        for (Films x : MainActivity.favorites) {
-                            if (x.getFilmName().equals(filmName)) {
-                                Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Этот фильм уже есть в избранном", Snackbar.LENGTH_SHORT).show();
-                                isFavorite = true;
-                            }
-                        }
-                        if (!isFavorite) {
-                            MainActivity.favorites.add(new Films(filmName, filmDescription, filmImage));
+                        if (!film.isFavorite()) {
+                            film.setFavorite(true);
+                            filmsViewModel.update(film);
                             Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Фильм добавлен в избранное", Snackbar.LENGTH_SHORT).show();
+                        } else {
+                            Snackbar.make(getActivity().findViewById(R.id.fragment_container), "Этот фильм уже есть в избранном", Snackbar.LENGTH_SHORT).show();
                         }
-
                         return true;
                     }
                 });
-
             }
         });
-
-    }
-
-    public void downloadFilms() {
-        if (filmsArray.isEmpty()) {
-            FilmSearcherApp.getInstance().filmsService.getMovies().enqueue(new Callback<List<FIlmsJson>>() {
-                @Override
-                public void onResponse(Call<List<FIlmsJson>> call, Response<List<FIlmsJson>> response) {
-                    if (response.isSuccessful()) {
-                        List<FIlmsJson> fIlmsJsons = response.body();
-                        for (FIlmsJson fIlmsJson : fIlmsJsons) {
-                            filmsArray.add(new Films(fIlmsJson));
-                        }
-                        initRecyclerView();
-                    } else {
-                        Toast.makeText(getContext(), "FAIL " + response.code(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<FIlmsJson>> call, Throwable t) {
-                    Toast.makeText(getContext(), "FAILURE " + t.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
-                    t.printStackTrace();
-                }
-            });
-        } else {
-            initRecyclerView();
-        }
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    static int returnCount() {
-        return filmsArray.size();
     }
 }
 

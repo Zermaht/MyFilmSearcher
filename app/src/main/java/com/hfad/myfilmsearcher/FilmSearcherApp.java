@@ -2,7 +2,7 @@ package com.hfad.myfilmsearcher;
 
 import android.app.Application;
 
-
+import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -11,9 +11,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FilmSearcherApp extends Application {
 
-    FilmsService filmsService;
-    CinemaService cinemaService;
-
+    public FilmsService filmsService;
+    public CinemaService cinemaService;
     private static FilmSearcherApp instance;
 
     @Override
@@ -21,15 +20,15 @@ public class FilmSearcherApp extends Application {
         super.onCreate();
 
         instance = this;
-
-    initRetrofit();
-
+        initRetrofit();
     }
 
-    public static FilmSearcherApp getInstance() { return instance;}
+    public static FilmSearcherApp getInstance() {
+        return instance;
+    }
 
     private void initRetrofit() {
-        HttpLoggingInterceptor httpLoggingInterceptor =new HttpLoggingInterceptor();
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()

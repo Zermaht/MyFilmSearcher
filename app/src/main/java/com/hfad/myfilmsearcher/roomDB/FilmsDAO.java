@@ -8,6 +8,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.hfad.myfilmsearcher.FilmsJson;
+
 import java.util.List;
 
 @Dao
@@ -31,16 +33,17 @@ public interface FilmsDAO {
     @Query("SELECT * from films_table")
     LiveData<List<FilmEntity>> getAllFilms();
 
+    @Query("SELECT * from films_table")
+    List<FilmEntity> getFilms();
+
     @Query("SELECT * from films_table WHERE name LIKE :search ")
     FilmEntity getFilmByName(String search);
 
     @Query("SELECT * from films_table WHERE _id LIKE :id")
     FilmEntity getFilmById(long id);
 
-    @Query("SELECT * from films_table WHERE isFavorite = 'true'")
-    List<FilmEntity> getFavoriteFilms();
-
-
+    @Query("SELECT * from films_table WHERE isFavorite LIKE :favorite")
+    List<FilmEntity> getFavoriteFilms(boolean favorite);
 
 
 }

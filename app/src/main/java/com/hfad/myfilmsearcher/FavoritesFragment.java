@@ -1,24 +1,30 @@
 package com.hfad.myfilmsearcher;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hfad.myfilmsearcher.roomDB.FilmEntity;
+import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
+
+import java.util.List;
 
 public class FavoritesFragment extends Fragment {
     static final String TAG = FavoritesFragment.class.getSimpleName();
     private RecyclerView recyclerView;
-
+    private FilmsViewModel filmsViewModel;
 
     @Nullable
     @Override
@@ -31,46 +37,50 @@ public class FavoritesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recycler_favorites);
-
+        filmsViewModel = new ViewModelProvider(this).get(FilmsViewModel.class);
         initRecycler();
-
     }
 
     private void initRecycler() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        String[] filmNames = new String[MainActivity.favorites.size()];
+        List<FilmEntity> favoriteFilms = filmsViewModel.getFavoriteFilms();
+
+        String[] filmNames = new String[favoriteFilms.size()];
         for (int i = 0; i < filmNames.length; i++) {
-            filmNames[i] = MainActivity.favorites.get(i).getFilmName();
+            filmNames[i] = favoriteFilms.get(i).getName();
         }
 
-        String[] filmImageUrl = new String[MainActivity.favorites.size()];
+        String[] filmImageUrl = new String[favoriteFilms.size()];
         for (int i = 0; i < filmNames.length; i++) {
-            filmImageUrl[i] = MainActivity.favorites.get(i).getImageUrl();
+            filmImageUrl[i] = favoriteFilms.get(i).getImgUrl();
         }
-
 
         FavoritesFilmsAdapter favoritesFilmsAdapter = new FavoritesFilmsAdapter(filmNames, filmImageUrl);
+        favoritesFilmsAdapter.setFavoritesFilms(favoriteFilms);
         recyclerView.setAdapter(favoritesFilmsAdapter);
 
         favoritesFilmsAdapter.setFavoritesListener(new FavoritesFilmsAdapter.FavoritesListener() {
             @Override
             public void onLongClick(int position, CardView cardView) {
+                TextView textView = cardView.findViewById(R.id.favorites_name);
+                String filmName = textView.getText().toString();
+                FilmEntity filmEntity = filmsViewModel.getFilmByName(filmName);
                 PopupMenu popupMenu = new PopupMenu(getContext(), cardView);
                 popupMenu.inflate(R.menu.favorites_popmenu);
                 popupMenu.show();
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MainActivity.favorites.remove(position);
-                        recyclerView.getAdapter().notifyItemRemoved(position);
+                        filmEntity.setFavorite(false);
+                        filmsViewModel.update(filmEntity);
+                        initRecycler();
                         return true;
                     }
                 });
             }
         });
-
     }
 
     @Override

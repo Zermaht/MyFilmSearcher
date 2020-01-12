@@ -15,18 +15,23 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hfad.myfilmsearcher.roomDB.FilmEntity;
+import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
+
+import java.util.List;
 
 public class FavoritesFilmsAdapter extends RecyclerView.Adapter<FavoritesFilmsAdapter.FavoritesViewHolder> {
 
     private String[] filmName;
     private String[] imageUrl;
     private FavoritesListener listener;
+    private List<FilmEntity> favoritesFilms;
 
     interface FavoritesListener {
         void onLongClick(int position, CardView cardView);
     }
 
-    public FavoritesFilmsAdapter(String[] filmName, String[] imageUrl) {
+    FavoritesFilmsAdapter(String[] filmName, String[] imageUrl) {
         this.filmName = filmName;
         this.imageUrl = imageUrl;
     }
@@ -51,7 +56,6 @@ public class FavoritesFilmsAdapter extends RecyclerView.Adapter<FavoritesFilmsAd
                 .into(imageView);
         Log.d("imageURl", imageURl);
 
-
         TextView textView = cardView.findViewById(R.id.favorites_name);
         textView.setText(filmName[position]);
 
@@ -72,7 +76,11 @@ public class FavoritesFilmsAdapter extends RecyclerView.Adapter<FavoritesFilmsAd
 
     @Override
     public int getItemCount() {
-        return MainActivity.favorites.size();
+        return favoritesFilms.size();
+    }
+
+    void setFavoritesFilms(List<FilmEntity> films){
+        favoritesFilms = films;
     }
 
     public static class FavoritesViewHolder extends RecyclerView.ViewHolder {

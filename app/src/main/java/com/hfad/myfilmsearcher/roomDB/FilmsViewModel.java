@@ -11,6 +11,7 @@ public class FilmsViewModel extends AndroidViewModel {
     private FilmsRepository filmsRepository;
 
     private LiveData<List<FilmEntity>> allFilms;
+    private List<FilmEntity> films;
     private FilmEntity filmById;
     private FilmEntity filmByName;
     private List<FilmEntity> favoriteFilms;
@@ -19,40 +20,55 @@ public class FilmsViewModel extends AndroidViewModel {
         super(application);
         filmsRepository = new FilmsRepository(application);
         allFilms = filmsRepository.getAllFilms();
+        films = filmsRepository.getFilms();
     }
 
-    LiveData<List<FilmEntity>> getAllFilms() {return allFilms;}
+    public LiveData<List<FilmEntity>> getAllFilms() {
+        return allFilms;
+    }
 
-    FilmEntity getFilmById(long id){
+    public List<FilmEntity> getFilms() {
+        return films;
+    }
+
+    public FilmEntity getFilmById(long id) {
         filmById = filmsRepository.getFilmById(id);
         return filmById;
     }
 
-    FilmEntity getFilmByName(String name){
+    public FilmEntity getFilmByName(String name) {
         filmByName = filmsRepository.getFilmByName(name);
         return filmByName;
     }
 
-    List<FilmEntity> getFavoriteFilms(){
+    public List<FilmEntity> getFavoriteFilms() {
         favoriteFilms = filmsRepository.getFavoriteFilms();
         return favoriteFilms;
     }
 
-    void insert (FilmEntity filmEntity){
-        filmsRepository.insert(filmEntity);
+    public void insert(FilmEntity filmEntity) {
+        if (filmsRepository.getFilmByName(filmEntity.getName()) == null) {
+            filmsRepository.insert(filmEntity);
+        } else {
+            return;
+        }
     }
 
-    void insertFIlms(List<FilmEntity> filmEntities){
+    /* public void insert(FilmsJson filmsJson) {filmsRepository.insert(filmsJson);}*/
+
+    public void insertFIlms(List<FilmEntity> filmEntities) {
         filmsRepository.insertFilms(filmEntities);
     }
 
-    void update(FilmEntity filmEntity){
+    public void update(FilmEntity filmEntity) {
         filmsRepository.update(filmEntity);
     }
 
-    void delete(FilmEntity filmEntity){
+    public void delete(FilmEntity filmEntity) {
         filmsRepository.delete(filmEntity);
     }
 
-    void deleteAll(){filmsRepository.deleteAll();}
+    public void deleteAll() {
+        filmsRepository.deleteAll();
+    }
 }
