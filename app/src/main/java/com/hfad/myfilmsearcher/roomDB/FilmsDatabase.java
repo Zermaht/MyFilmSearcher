@@ -1,6 +1,7 @@
 package com.hfad.myfilmsearcher.roomDB;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.hfad.myfilmsearcher.FilmSearcherApp;
 import com.hfad.myfilmsearcher.FilmsJson;
+import com.hfad.myfilmsearcher.MainActivity;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -37,20 +39,19 @@ public abstract class FilmsDatabase extends RoomDatabase {
                 context.getApplicationContext(),
                 FilmsDatabase.class,
                 DB_NAME)
-                .addCallback(roomDatabaseCallback)
                 .allowMainThreadQueries()
                 .build();
     }
 
-    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
+    /*private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
-            instance.downloadFilms();
-        }
-    };
 
-    public void downloadFilms() {
+        }
+    };*/
+
+    /*public void downloadFilms() {
         FilmSearcherApp.getInstance().filmsService.getMovies().enqueue(new retrofit2.Callback<List<FilmsJson>>() {
             @Override
             public void onResponse(Call<List<FilmsJson>> call, Response<List<FilmsJson>> response) {
@@ -73,7 +74,5 @@ public abstract class FilmsDatabase extends RoomDatabase {
                 t.printStackTrace();
             }
         });
-
-
-    }
+    }*/
 }

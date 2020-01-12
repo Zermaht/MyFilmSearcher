@@ -26,6 +26,7 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
+import com.hfad.myfilmsearcher.roomDB.UpdateDatabaseService;
 
 import java.util.List;
 

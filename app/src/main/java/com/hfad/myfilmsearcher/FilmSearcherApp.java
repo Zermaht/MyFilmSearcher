@@ -1,8 +1,10 @@
 package com.hfad.myfilmsearcher;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
+import com.hfad.myfilmsearcher.roomDB.UpdateDatabaseService;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -21,6 +23,8 @@ public class FilmSearcherApp extends Application {
 
         instance = this;
         initRetrofit();
+        Intent intent = new Intent(this, UpdateDatabaseService.class);
+        startService(intent);
     }
 
     public static FilmSearcherApp getInstance() {
