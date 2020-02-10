@@ -1,10 +1,9 @@
-package com.hfad.myfilmsearcher;
+package com.hfad.myfilmsearcher.CinemaInternet;
 
-import java.util.List;
+import com.hfad.myfilmsearcher.CinemaInternet.CinemaJson;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface CinemaService {

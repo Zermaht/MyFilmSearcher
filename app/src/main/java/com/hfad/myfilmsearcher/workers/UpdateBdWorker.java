@@ -1,21 +1,25 @@
-/*
-package com.hfad.myfilmsearcher.roomDB;
+package com.hfad.myfilmsearcher.workers;
 
-import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import com.hfad.myfilmsearcher.FilmSearcherApp;
 import com.hfad.myfilmsearcher.FilmsInternet.FilmsJson;
 import com.hfad.myfilmsearcher.MainActivity;
 import com.hfad.myfilmsearcher.R;
+import com.hfad.myfilmsearcher.roomDB.FilmEntity;
+import com.hfad.myfilmsearcher.roomDB.FilmsDatabase;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -23,26 +27,26 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class UpdateDatabaseService extends IntentService {
-    final static String CHANEL_ID = "234";
-    FilmsDatabase database;
+public class UpdateBdWorker extends Worker {
+   public final static String CHANEL_ID = "234";
+    FilmsDatabase db;
 
-    public UpdateDatabaseService() {
-        super("UpdateDatabaseService");
+    public UpdateBdWorker(@NonNull Context mContext, @NonNull WorkerParameters workerParams) {
+        super(mContext, workerParams);
+        db = FilmSearcherApp.getInstance().getDb();
+
     }
 
+    @NonNull
     @Override
-    public void onCreate() {
-        super.onCreate();
-        database = FilmSearcherApp.getInstance().getDb();
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    public Result doWork() {
+        Context applicationContext = getApplicationContext();
         downloadFilms();
+        showMessage(applicationContext);
+        return Result.success();
     }
 
-    public void downloadFilms() {
+    private void downloadFilms() {
         FilmSearcherApp.getInstance().filmsService.getMovies().enqueue(new retrofit2.Callback<List<FilmsJson>>() {
             @Override
             public void onResponse(Call<List<FilmsJson>> call, Response<List<FilmsJson>> response) {
@@ -52,11 +56,11 @@ public class UpdateDatabaseService extends IntentService {
                         @Override
                         public void run() {
                             for (FilmsJson filmsJson : filmsJsons) {
-                                if (database.filmsDAO().getFilmByName(filmsJson.title) == null) {
-                                    database.filmsDAO().insert(new FilmEntity(filmsJson));
+                                if (db.filmsDAO().getFilmByName(filmsJson.title) == null) {
+                                    db.filmsDAO().insert(new FilmEntity(filmsJson));
                                 }
                             }
-                            showMessage();
+
                         }
                     });
                 }
@@ -64,15 +68,14 @@ public class UpdateDatabaseService extends IntentService {
             @Override
             public void onFailure(Call<List<FilmsJson>> call, Throwable t) {
                 t.printStackTrace();
-                showMessage();
             }
         });
     }
 
-    private void showMessage(){
-        Intent intent = new Intent(this, MainActivity.class);
+    private void showMessage(Context context){
+        Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
+                context,
                 0,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -81,13 +84,17 @@ public class UpdateDatabaseService extends IntentService {
             CharSequence name = "System";
             String description = "System notifications";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
             NotificationChannel channel = new NotificationChannel(CHANEL_ID, name, importance);
             channel.setDescription(description);
-            NotificationManager notificationManager =getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANEL_ID)
                 .setSmallIcon(R.drawable.ic_feedback_black_24dp)
                 .setContentTitle("System")
                 .setContentText("Database was updated")
@@ -95,8 +102,7 @@ public class UpdateDatabaseService extends IntentService {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(2, builder.build());
     }
 }
-*/

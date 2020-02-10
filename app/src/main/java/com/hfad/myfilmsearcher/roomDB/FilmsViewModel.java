@@ -18,7 +18,7 @@ public class FilmsViewModel extends AndroidViewModel {
 
     public FilmsViewModel(Application application) {
         super(application);
-        filmsRepository = new FilmsRepository(application);
+        filmsRepository = new FilmsRepository();
         allFilms = filmsRepository.getAllFilms();
         films = filmsRepository.getFilms();
     }
@@ -56,7 +56,7 @@ public class FilmsViewModel extends AndroidViewModel {
 
     /* public void insert(FilmsJson filmsJson) {filmsRepository.insert(filmsJson);}*/
 
-    public void insertFIlms(List<FilmEntity> filmEntities) {
+    public void insertFilms(List<FilmEntity> filmEntities) {
         filmsRepository.insertFilms(filmEntities);
     }
 

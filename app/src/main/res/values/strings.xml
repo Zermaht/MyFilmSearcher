@@ -38,7 +38,9 @@
     <string name="navigation_email">andruxa040@gmail.com</string>
     <string name="favorites">Избранное</string>
     <string name="delete">Удалить</string>
-    <string name="add">Добавить</string>
+    <string name="add">Добавить в избранное</string>
     <string name="cinema">Кинотеатры</string>
+    <string name="remind">Напоминание</string>
+    <string name="date_remind">Дата и время</string>
 
 </resources>

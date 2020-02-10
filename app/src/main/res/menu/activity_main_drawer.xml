@@ -10,6 +10,13 @@
             android:title="@string/drawer_main"
             android:icon="@drawable/ic_home_24px"/>
 
+        <item
+            android:id="@+id/nav_remind"
+            android:title="@string/remind"
+            android:icon="@drawable/ic_add_alarm_black_24dp"
+            />
+
+
     </group>
 
     <item

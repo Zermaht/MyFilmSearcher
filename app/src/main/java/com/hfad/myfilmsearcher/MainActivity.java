@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -25,8 +27,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.hfad.myfilmsearcher.CinemaInternet.CinemaJson;
+import com.hfad.myfilmsearcher.CinemaInternet.MapActivity;
+import com.hfad.myfilmsearcher.receivers.ConnectionStateMonitor;
 import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
-import com.hfad.myfilmsearcher.roomDB.UpdateDatabaseService;
 
 import java.util.List;
 
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
     FloatingActionButton fab;
 
     static LatLng target_location;
-    static List<CinemaJson.Result> cinemasList;
+    public static List<CinemaJson.Result> cinemasList;
 
     private FilmsViewModel filmsViewModel;
 
@@ -88,6 +92,9 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
         });
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_CODE);
+
+        ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(this);
+        connectionStateMonitor.observe(this, aBoolean -> {});
     }
 
     @Override

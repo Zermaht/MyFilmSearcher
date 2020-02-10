@@ -3,7 +3,9 @@ package com.hfad.myfilmsearcher.roomDB;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.hfad.myfilmsearcher.FilmsJson;
+import com.hfad.myfilmsearcher.FilmsInternet.FilmsJson;
+
+import java.util.Objects;
 
 @Entity(tableName = "films_table")
 public class FilmEntity {
@@ -22,6 +24,8 @@ public class FilmEntity {
         this.imgUrl = imgUrl;
         this.isFavorite = isFavorite;
     }
+
+    public FilmEntity(){}
 
     public FilmEntity(FilmsJson filmsJson) {
         this.name = filmsJson.title;
@@ -77,5 +81,22 @@ public class FilmEntity {
                 ", imgUrl='" + imgUrl + '\'' +
                 ", isFavorite=" + isFavorite +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FilmEntity that = (FilmEntity) o;
+        return _id == that._id &&
+                isFavorite == that.isFavorite &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(imgUrl, that.imgUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_id, name, description, imgUrl, isFavorite);
     }
 }

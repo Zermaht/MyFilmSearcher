@@ -1,4 +1,4 @@
-package com.hfad.myfilmsearcher;
+package com.hfad.myfilmsearcher.FilmsInternet;
 
 
 public class FilmsJson {

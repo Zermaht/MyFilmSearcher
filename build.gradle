@@ -30,5 +30,5 @@ task clean(type: Delete) {
 ext {
     roomVersion = '2.2.3'
     gmsPlayService = '17.0.0'
-    archLifecycleVersion = '2.2.0-rc03'
+    archLifecycleVersion = '2.2.0'
 }

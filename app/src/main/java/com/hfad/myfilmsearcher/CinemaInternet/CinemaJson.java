@@ -1,4 +1,4 @@
-package com.hfad.myfilmsearcher;
+package com.hfad.myfilmsearcher.CinemaInternet;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

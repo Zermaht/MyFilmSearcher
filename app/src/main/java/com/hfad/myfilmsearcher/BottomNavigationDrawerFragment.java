@@ -61,6 +61,9 @@ public class BottomNavigationDrawerFragment extends BottomSheetDialogFragment {
                             activity.switchFabButton();
                         }
                         break;
+                    case R.id.nav_remind:
+                        new RemindDialog(getContext()).show();
+                        break;
                     case R.id.nav_exit:
                         new AlertDialog.Builder(getContext())
                                 .setTitle("Выход")

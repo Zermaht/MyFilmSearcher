@@ -75,7 +75,6 @@
         android:background="@drawable/ic_close_24px"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/navigation_text_view2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/navigation_text_view" />

@@ -1,30 +1,11 @@
 package com.hfad.myfilmsearcher.roomDB;
 
-import android.app.Application;
-import android.app.IntentService;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.hfad.myfilmsearcher.FilmSearcherApp;
-import com.hfad.myfilmsearcher.FilmsJson;
-import com.hfad.myfilmsearcher.MainActivity;
-import com.hfad.myfilmsearcher.R;
 
 import java.util.List;
 import java.util.concurrent.Executors;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 public class FilmsRepository {
 
@@ -35,8 +16,8 @@ public class FilmsRepository {
     private List<FilmEntity> films;
     private List<FilmEntity> favoriteFilms;
 
-    FilmsRepository(Application application) {
-        FilmsDatabase db = FilmsDatabase.getInstance(application);
+   public FilmsRepository() {
+        FilmsDatabase db = FilmSearcherApp.getInstance().getDb();
         dao = db.filmsDAO();
         allFilms = dao.getAllFilms();
         films = dao.getFilms();
@@ -49,6 +30,7 @@ public class FilmsRepository {
     List<FilmEntity> getFilms() {
         return films;
     }
+
 
     FilmEntity getFilmById(long id) {
         filmById = dao.getFilmById(id);
@@ -99,6 +81,5 @@ public class FilmsRepository {
             }
         });
     }
-
 
 }
