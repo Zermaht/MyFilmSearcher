@@ -60,7 +60,6 @@ public class UpdateBdWorker extends Worker {
                                     db.filmsDAO().insert(new FilmEntity(filmsJson));
                                 }
                             }
-
                         }
                     });
                 }
