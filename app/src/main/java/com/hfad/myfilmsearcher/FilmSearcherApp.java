@@ -1,7 +1,6 @@
 package com.hfad.myfilmsearcher;
 
 import android.app.Application;
-import android.content.Intent;
 
 import androidx.room.Room;
 import androidx.work.Constraints;
@@ -13,6 +12,7 @@ import com.hfad.myfilmsearcher.CinemaInternet.CinemaService;
 import com.hfad.myfilmsearcher.FilmsInternet.FilmsService;
 import com.hfad.myfilmsearcher.roomDB.FilmsDatabase;
 import com.hfad.myfilmsearcher.workers.UpdateBdWorker;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,27 +36,24 @@ public class FilmSearcherApp extends Application {
 
         instance = this;
         initRetrofit();
+        initDb();
+        initUpdateBdWorker();
+
         /*Intent intent = new Intent(this, UpdateDatabaseService.class);
         startService(intent);*/
+    }
 
+    public static FilmSearcherApp getInstance() {
+        return instance;
+    }
+
+    private void initDb() {
         mDb = Room.databaseBuilder(
                 this,
                 FilmsDatabase.class,
                 DB_NAME)
                 .allowMainThreadQueries()
                 .build();
-
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-
-        PeriodicWorkRequest updateBd = new PeriodicWorkRequest.Builder(UpdateBdWorker.class, 1, TimeUnit.DAYS).setConstraints(constraints).addTag("WorkerBd").build();
-        WorkManager.getInstance(this).enqueue(updateBd);
-
-    }
-
-    public static FilmSearcherApp getInstance() {
-        return instance;
     }
 
     private void initRetrofit() {
@@ -71,6 +68,7 @@ public class FilmSearcherApp extends Application {
                 .client(okHttpClient)
                 .baseUrl("http://my-json-server.typicode.com/denis-zhuravlev/json-placeholder/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         filmsService = retrofit.create(FilmsService.class);
@@ -79,10 +77,23 @@ public class FilmSearcherApp extends Application {
                 .client(okHttpClient)
                 .baseUrl("https://maps.googleapis.com/maps/api/place/nearbysearch/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         cinemaService = cinemaRetrofit.create(CinemaService.class);
 
+    }
+
+    private void initUpdateBdWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        PeriodicWorkRequest updateBd = new PeriodicWorkRequest.Builder(UpdateBdWorker.class, 1, TimeUnit.DAYS)
+                .setConstraints(constraints)
+                .addTag("WorkerBd").build();
+
+        WorkManager.getInstance(this).enqueue(updateBd);
     }
 
     public FilmsDatabase getDb() {

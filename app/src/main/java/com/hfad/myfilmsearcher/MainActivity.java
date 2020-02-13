@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,6 +32,10 @@ import com.hfad.myfilmsearcher.roomDB.FilmsViewModel;
 
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_REQUEST_CODE);
 
         ConnectionStateMonitor connectionStateMonitor = new ConnectionStateMonitor(this);
-        connectionStateMonitor.observe(this, aBoolean -> {});
+        connectionStateMonitor.observe(this, aBoolean -> {
+        });
     }
 
     @Override
@@ -182,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
                 public void onSuccess(Location location) {
                     if (location != null) {
                         target_location = new LatLng(location.getLatitude(), location.getLongitude());
-                        setCinemasList();
+                        setObservableCinemasList();
                     }
                 }
             });
@@ -205,6 +208,31 @@ public class MainActivity extends AppCompatActivity implements AddFilmFragment.o
 
             }
         });
+    } //Больше не нужен, но оставлю для примера. Запрос делается через setObservableCinemasList()
+
+    void setObservableCinemasList() {
+        String location = target_location.latitude + "," + target_location.longitude;
+        FilmSearcherApp.getInstance().cinemaService.getObservableCinemas(location, 10000, "movie_theater", "AIzaSyA43ZBsSquDZMUZJPs_IWTeHx6A2LxZK3E")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<CinemaJson>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(CinemaJson cinemaJson) {
+                        cinemasList = cinemaJson.getResults();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.hfad.myfilmsearcher.workers;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -24,25 +23,28 @@ import com.hfad.myfilmsearcher.roomDB.FilmsDatabase;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class UpdateBdWorker extends Worker {
-   public final static String CHANEL_ID = "234";
-    FilmsDatabase db;
+    public final static String CHANEL_ID = "234";
+    private FilmsDatabase db;
 
     public UpdateBdWorker(@NonNull Context mContext, @NonNull WorkerParameters workerParams) {
         super(mContext, workerParams);
         db = FilmSearcherApp.getInstance().getDb();
-
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        Context applicationContext = getApplicationContext();
-        downloadFilms();
-        showMessage(applicationContext);
+        downloadObservableMovies();
+        showMessage(getApplicationContext());
+
         return Result.success();
     }
 
@@ -64,14 +66,44 @@ public class UpdateBdWorker extends Worker {
                     });
                 }
             }
+
             @Override
             public void onFailure(Call<List<FilmsJson>> call, Throwable t) {
                 t.printStackTrace();
             }
         });
+    } //Больше не нужен но оставлю для примера. Запрос делается через downloadObservableMovies()
+
+    private void downloadObservableMovies() {
+        FilmSearcherApp.getInstance().filmsService.getObservableMovies()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<FilmsJson>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(List<FilmsJson> filmsJsons) {
+                        for (FilmsJson filmsJson : filmsJsons) {
+                            if (db.filmsDAO().getFilmByName(filmsJson.title) == null) {
+                                db.filmsDAO().insert(new FilmEntity(filmsJson));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
-    private void showMessage(Context context){
+    private void showMessage(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
